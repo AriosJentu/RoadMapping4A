@@ -15,35 +15,33 @@ CirclesInfo = Abstracts.AbstractMapCircles(outside=OutsideCircles, inside=Inside
 OutsideLine = MapElements.MapLine(
 	BasicElements.Point(0, 0), 
 	BasicElements.Point(1, 1),
-	LinesInfo,
-	"outside"
+	OutsideLines
 )
 
 InsideLine = MapElements.MapLine(
 	BasicElements.Point(1, 0), 
 	BasicElements.Point(2, 1),
-	LinesInfo,
-	"inside"
+	InsideLines
 )
 
 ConnectingLine = MapElements.MapLine(
 	BasicElements.Point(2, 0), 
 	BasicElements.Point(3, 1),
-	LinesInfo,
-	"connecting"
+	ConnectingLines
 )
 
 OutsideCircle = MapElements.MapCircle(
 	BasicElements.Point(0, 5),
-	CirclesInfo,
-	"outside"
+	OutsideCircles
 )
 
 InsideCircle = MapElements.MapCircle(
 	BasicElements.Point(5, 5),
-	CirclesInfo,
-	"inside"
+	InsideCircles
 )
+
+print(LinesInfo)
+print(CirclesInfo)
 
 print(OutsideLine)
 print(InsideLine)
