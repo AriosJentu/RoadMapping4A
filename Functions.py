@@ -1,10 +1,9 @@
 import BasicElements
-import MapElements
 
 class Functions:
 
 	@staticmethod
-	def intersect_line_line(line1: MapElements.MapLine, line2: MapElements.MapLine):
+	def intersect_line_line(line1: BasicElements.Line, line2: BasicElements.Line):
 		'''Function to get intersection point of the lines, or detect there is no intersection, or say they are equal'''
 		A1, B1, C1 = line1.get_equation().get_coefficients()
 		A2, B2, C2 = line2.get_equation().get_coefficients()
@@ -28,7 +27,7 @@ class Functions:
 		return BasicElements.Point(x, y)
 
 	@staticmethod
-	def intersect_line_circle(line: MapElements.MapLine, circle: MapElements.MapCircle):
+	def intersect_line_circle(line: BasicElements.Line, circle: BasicElements.Circle):
 		'''Function to get intersection points of the line and circle, or detect there is no intersection'''
 		A1, B1, C1 = circle.get_equation().get_coefficients()
 		A2, B2, C2 = line.get_equation().get_coefficients()
@@ -90,5 +89,5 @@ class Functions:
 				return points
 
 	@staticmethod
-	def intersect_circle_circle(circle1: MapElements.MapCircle, circle2: MapElements.MapCircle):
+	def intersect_circle_circle(circle1: BasicElements.Circle, circle2: BasicElements.Circle):
 		pass
