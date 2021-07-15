@@ -284,7 +284,7 @@ class LineEquation:
 	def get_equation(self):
 		return self.equation
 
-	def get_equation_coefficients(self):
+	def get_coefficients(self):
 		return self.coefficients
 
 	#Other classic methods:
@@ -306,9 +306,22 @@ class CircleEquation:
 	'''
 	def __init__(self, circle: Circle = Circle(Point(0, 0), 1)):
 		self.circle = circle
+		self.coefficients = self.generate_equation_coeffitients()
 		self.equation = self.generate_equation()
 
 	#Generator
+
+	def generate_equation_coeffitients(self):
+		'''
+		Function to generate circle equation coeffitients from available center and radius
+		Looks like: (x-x0)^2 + (y-y0)^2 - r^2 = 0, but in terms of coefficients x^2 + y^2 + Ax + By + C = 0
+		Returns list of coeffitients [A, B, C]
+		For x^2 and y^2 there are always coefficients equals 1, only for linear terms
+		'''
+		A = -2*self.circle.center.x
+		B = -2*self.circle.center.y
+		C = self.circle.center.x**2 + self.circle.center.y**2 - self.circle.radius**2
+		return [A, B, C]
 
 	def generate_equation(self):
 		'''
@@ -330,6 +343,9 @@ class CircleEquation:
 
 	def get_equation(self):
 		return self.equation
+
+	def get_coefficients(self):
+		return self.coefficients
 
 	#Other classic methods:
 
