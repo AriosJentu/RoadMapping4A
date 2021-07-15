@@ -46,11 +46,34 @@ class Point:
 		- 'angle' - angle in radians of oriented line (between 0 and PI)
 		- 'distance' - distance between points (can be negative to orientate it in negative direction)
 		'''
-		x2 = round(self.x + distance*cos(angle%pi), 6)
-		y2 = round(self.y + distance*sin(angle%pi), 6)
-		return Point(x2, y2)
+		deltapoint = Point(
+			round(distance*cos(angle%pi), 6), 
+			round(distance*sin(angle%pi), 6)
+		)
+		return self+deltapoint
 
 	#Other classic methods
+
+	def __add__(self, point2: 'Point'):
+		if not isinstance(point2, Point):
+			point2 = Point(0, 0)
+
+		return Point(self.x + point2.x, self.y + point2.y)
+
+	def __mul__(self, number: float):
+		return Point(self.x*number, self.y*number)
+
+	def __radd__(self, point2: 'Point'):
+		return self.__add__(point2)
+
+	def __sub__(self, point2: 'Point'):
+		return self.__add__(point2.__mul__(-1))
+
+	def __rsub__(self, point2: 'Point'):
+		return point2.__add__(self.__mul__(-1))
+
+	def __div__(self, number: float):
+		return self.__mul__(1/number)
 
 	def __str__(self):
 		return f"Point({self.x}, {self.y})"
@@ -105,20 +128,45 @@ class Line:
 
 	#Getters
 
-	def get_line_function(self):
+	def get_line_equation(self):
 		'''
-		Function to get line equation from available points
-		If there is parallel line to vertical axis, there is no one-to-one representative function
+		Function to get line equation coefficients from available points
+		Looks like: Ax + By + C = 0
+		Returns function f(x, y) = Ax + By + C
 		'''
-		dx = self.point1.x - self.point2.x
-		dy = self.point1.y - self.point2.y
+		deltas = self.point2 - self.point1
+		A = deltas.y
+		B = -deltas.x
+		C = self.point1.y * deltas.x - self.point1.x * deltas.y
 
-		if dx == 0:
-			return None
+		#Generate function of the line
+		def equation(point: Point = Point(0, 0)):
+			if not isinstance(point, Point):
+				point = Point(0, 0)
 
-		k = dy/dx
-		b = self.point1.y - k*self.point1.x
-		return lambda x: k*x + b
+			return A*point.x + B*point.y + C
+
+		return equation
+
+	def is_point_on_line(self, point: Point = Point(0, 0)):
+		'''
+		Function to check is point (x, y) located on the line
+		By default checks is line intersect center of coordinate system
+		'''
+		return self.get_line_equation(point) == 0
+
+	def is_point_on_sector(self, point: Point = Point(0, 0)):
+		'''
+		Function to check is point (x, y) located on the sector of line, defined by two boundary points
+		'''
+		
+		xmin, xmax = min(self.point1.x, self.point2.x), max(self.point1.x, self.point2.x)
+		ymin, ymax = min(self.point1.y, self.point2.y), max(self.point1.y, self.point2.y)
+		
+		xcond = (xmin <= point.x <= xmax)
+		ycond = (ymin <= point.y <= ymax)
+
+		return xcond && ycond && self.is_point_on_line(point)
 
 	#Other classic methods
 
