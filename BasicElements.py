@@ -127,7 +127,7 @@ class Line:
 
 	#Getters
 
-	def get_line_equation(self):
+	def get_equation(self):
 		'''
 		Function to get line equation coefficients from available points
 		Looks like: Ax + By + C = 0
@@ -135,14 +135,26 @@ class Line:
 		'''
 		return LineEquation(self)
 
+	def get_boundaries(self):
+		'''Function to get boundary points of line'''
+		return self.point1, self.point2
+
+	def get_distance(self):
+		'''Function to get distance between boundary points'''
+		return self.distance
+
+	def get_angle(self):
+		'''Function to get angle between line and horizontal axis'''
+		return self.angle
+
 	def is_point_on_line(self, point: Point = Point(0, 0)):
 		'''
 		Function to check is point (x, y) located on the line
 		By default checks is line intersect center of coordinate system
 		'''
-		return self.get_line_equation(point) == 0
+		return self.get_equation(point) == 0
 
-	def is_point_on_sector(self, point: Point = Point(0, 0)):
+	def is_point_on_object(self, point: Point = Point(0, 0)):
 		'''
 		Function to check is point (x, y) located on the sector of line, defined by two boundary points
 		'''
@@ -166,6 +178,63 @@ class Line:
 	def __repr__(self):
 		return f"Line[{self.point1}, {self.point2}]"
 
+class Circle:
+	'''
+	Circle - class to work with circles in 2d space
+	Containing parameters: 
+	- 'center': central point of circle in 2d space
+	- 'radius': radius of the circle
+	'''
+
+	#Initializer
+	def __init__(self, 
+			center: Point = Point(0, 0), 
+			radius: float = 1
+	):
+		self.center = center
+		self.radius = radius
+
+	#Getters
+
+	def get_equation(self):
+		'''
+		Function to get circle equation from available parameters
+		Looks like: (x-x0)^2 + (y-y0)^2 - r^2 = 0
+		Returns function f(Point(x, y)) = (x-x0)^2 + (y-y0)^2 - r^2
+		'''
+		return CircleEquation(self)
+
+	def get_center(self):
+		'''Function to get center point of the circle'''
+		return self.center
+
+	def get_radius(self):
+		'''Function to get radius of the circle'''
+		return self.radius
+
+	def is_point_inside(self, point: Point = Point(0, 0)):
+		'''
+		Function to get information - is point located inside circle
+		'''
+		return self.get_equation()(point) < 0
+
+	def is_point_on_object(self, point: Point = Point(0, 0)):
+		'''
+		Function to get information - is point located on circle boundaries
+		'''
+		return self.get_equation()(point) == 0
+
+	#Other classic methods
+
+	def __str__(self):
+		return f"""Circle:
+		Center: \t{self.center}, 
+		Radius: \t{self.radius}"""
+
+	def __repr__(self):
+		return f"Circle[{self.center}, {self.radius}]"
+
+
 class LineEquation:
 	'''
 	LineEquation - class to work with line equations in 2d space
@@ -177,7 +246,7 @@ class LineEquation:
 	):
 		self.line = line
 		self.coefficients = self.generate_equation_coeffitients()
-		self.equation = self.generate_line_equation()
+		self.equation = self.generate_equation()
 
 	#Generators
 
@@ -193,7 +262,7 @@ class LineEquation:
 		C = self.line.point1.y * deltas.x - self.line.point1.x * deltas.y
 		return [A, B, C]
 
-	def generate_line_equation(self):
+	def generate_equation(self):
 		'''
 		Function to generate line equation from available points
 		Looks like: Ax + By + C = 0
@@ -212,10 +281,10 @@ class LineEquation:
 
 	#Getters
 
-	def get_line_equation(self):
+	def get_equation(self):
 		return self.equation
 
-	def get_line_equation_coefficients(self):
+	def get_equation_coefficients(self):
 		return self.coefficients
 
 	#Other classic methods:
@@ -233,17 +302,15 @@ class CircleEquation:
 	'''
 	CircleEquation - class to work with circle equations in 2d space
 	Containing parameters: 
-	- 'center': central point of the circle in 2d space
-	- 'radius': radius of the circle
+	- 'circle': circle in 2d space
 	'''
-	def __init__(self, center: Point = Point(0, 0), radius: float = 1):
-		self.center = center
-		self.radius = radius
-		self.equation = self.generate_circle_equation()
+	def __init__(self, circle: Circle = Circle(Point(0, 0), 1)):
+		self.circle = circle
+		self.equation = self.generate_equation()
 
 	#Generator
 
-	def generate_circle_equation(self):
+	def generate_equation(self):
 		'''
 		Function to generate circle equation from available center and radius
 		Looks like: (x-x0)^2 + (y-y0)^2 - r^2 = 0
@@ -254,26 +321,20 @@ class CircleEquation:
 			if not isinstance(point, Point):
 				point = Point(0, 0)
 
-			deltas = self.point-self.center
-			return deltas.x**2 + deltas.y**2 - self.radius**2
+			deltas = self.point-self.circle.center
+			return deltas.x**2 + deltas.y**2 - self.circle.radius**2
 
 		return function
 
 	#Getters
 
-	def get_circle_equation(self):
+	def get_equation(self):
 		return self.equation
-
-	def is_point_inside(self, point: Point = Point(0, 0)):
-		'''
-		Function to get information - is point located inside circle
-		'''
-		return self.equation(point) < 0
 
 	#Other classic methods:
 
 	def __str__(self):
-		return f"Circle equation: (x - {self.center.x})^2 + (y - {self.center.y})^2 - {self.radius}^2 = 0"
+		return f"Circle equation: (x - {self.circle.center.x})^2 + (y - {self.circle.center.y})^2 - {self.circle.radius}^2 = 0"
 
 	def __repr__(self):
 		return self.__str__()
