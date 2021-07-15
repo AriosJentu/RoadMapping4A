@@ -29,7 +29,65 @@ class Functions:
 
 	@staticmethod
 	def intersect_line_circle(line: MapElements.MapLine, circle: MapElements.MapCircle):
-		pass
+		'''Function to get intersection points of the line and circle, or detect there is no intersection'''
+		A1, B1, C1 = circle.get_equation().get_coefficients()
+		A2, B2, C2 = line.get_equation().get_coefficients()
+
+		#Solving system of (x, y): {x**2 + y**2 + A1x + B1y + C1 = 0, A2x + B2y + C2 = 0}
+
+		#If line contains y value:
+		if B2 != 0:
+			#Isolate y
+			yf = lambda x: (-C2 - A2*x)/B2
+
+			#Generate the quadratic equation for x: Ax**2 + Bx + C = 0 from system of (x, y)
+			A = A2**2 + B2**2
+			B = B2**2 * A1 + 2*A2*C2 - A2*B2*B1
+			C = C2**2 - B2*C2*B1 + B2**2 * C1
+
+			D = B**2 - 4*A*C
+			if D < 0 or A == 0:
+				#If discriminant is negative, or line is not presented as function - there is no intersection
+				return None
+
+			if D == 0:
+				x = -B/(2*A)
+				y = yf(x)
+				return [BasicElements.Point(x, y)]
+			else:
+				points = []
+				rD = D**(1/2)
+				for sign in [-1, 1]:
+					x = (-B+sign*rD)/(2*A)
+					y = yf(x)
+					points.append(BasicElements.Point(x, y))
+
+				return points
+		else:
+			#Isolate x
+			x = -C2/A2
+			#Get coefficitients for quadratic equation in terms of y
+			A = 1
+			B = B1
+			C = C1 - A1*C2/A2 + C2**2 / A2**2
+
+			D = B**2 - 4*A*C
+			if D < 0:
+				#If discriminant is negative, or line is not presented as function - there is no intersection
+				return None
+
+			if D == 0:
+				y = -B/(2*A)
+				return [BasicElements.Point(x, y)]
+
+			else:
+				points = []
+				rD = D**(1/2)
+				for sign in [-1, 1]:
+					y = (-B+sign*rD)/(2*A)
+					points.append(BasicElements.Point(x, y))
+
+				return points
 
 	@staticmethod
 	def intersect_circle_circle(circle1: MapElements.MapCircle, circle2: MapElements.MapCircle):
