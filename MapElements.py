@@ -52,20 +52,11 @@ class MapLine(BasicElements.Line):
 
 	#Getters
 
-	def get_boundaries(self):
-		return self.point1, self.point2
-
 	def get_thickness(self):
 		return self.lineclass.thickness
 
 	def get_length(self):
 		return self.lineclass.length
-
-	def get_distance(self):
-		return self.distance
-
-	def get_angle(self):
-		return self.angle
 
 	#Other classic methods
 
@@ -81,43 +72,36 @@ class MapLine(BasicElements.Line):
 		return f"MapLine[p1: {self.point1}, p2: {self.point2}, cls: {self.lineclass}]"
 
 
-class MapCircle:
+class MapCircle(BasicElements.Circle):
 	'''
 	MapCircle - class to work with circles in 2d space with parameters of the map
 	Containing parameters: 
-	- 'point': central point of circle in 2d space
+	- 'center': central point of circle in 2d space
 	- 'circleclass': abstract class of the map circle [AbstractMapCircleParameters]
 	'''
 	
 	DEFAULTS = {
-		"point": BasicElements.Point(0, 0),
+		"center": BasicElements.Point(0, 0),
 		"circleclass": Abstracts.AbstractMapCircleParameters(),
 	}
 
 	#Initializer
 	def __init__(self, 
-		point: BasicElements.Point = DEFAULTS["point"],
+		center: BasicElements.Point = DEFAULTS["center"],
 		circleclass: Abstracts.AbstractMapCircleParameters = DEFAULTS["circleclass"]
 	):
 
-		self.point = point
+		super().__init__(center, circleclass.radius)
 		self.circleclass = circleclass
-
-	#Getters
-
-	def get_radius(self):
-		return self.circleclass.radius
-
-	def get_center(self):
-		return self.point
 
 	#Other classic methods
 
 	def __str__(self):
 		return f"""MapCircle:
-		Center: \t{self.point}, 
+		Center: \t{self.center}, 
+		Radius: \t{self.radius}, 
 		Class:  \t{self.circleclass}"""
 
 	def __repr__(self):
-		return f"MapCircle[c: {self.point}, cls: {self.circleclass}]"
+		return f"MapCircle[c: {self.point}, r: {self.radius}, cls: {self.circleclass}]"
 
