@@ -9,20 +9,26 @@ class AbstractMapLineParameters:
 	Containing parameters: 
 	- 'thickness' of line (float)
 	- 'length' of line (float)
+	- 'distance' between lines (float)
+	Comment:
+	For 'outside' line there is only thickness and length
+	For 'inside' line there is thickness, length, and distance from previous line (must be less than smallest distance to outside line)
+	For 'connecting' line there is thickness and distance (distance means separation from boundaries of previous line)
 	'''
 
 	#Initializer
-	def __init__(self, thickness: float = 1, length: float = 1):
+	def __init__(self, thickness: float = 1, length: float = 1, distance: float = 1):
 		self.thickness = thickness
 		self.length = length
+		self.distance = distance
 
 	#Other classic methods
 	
 	def __str__(self):
-		return f"AbstractMapLineParameters: Length - '{self.length}', Thickness - '{self.thickness}'"
+		return f"AbstractMapLineParameters: Length - '{self.length}', Thickness - '{self.thickness}', Distance - '{self.distance}'"
 
 	def __repr__(self):
-		return f"AbstractMapLineParameters{{length={self.length}, thikness={self.thickness}}}"
+		return f"AbstractMapLineParameters{{length={self.length}, thikness={self.thickness}, distance={self.distance}}}"
 
 
 class AbstractMapLines:
@@ -31,7 +37,7 @@ class AbstractMapLines:
 	Contains parameters:
 	- 'outside' line parameters (AbstractMapLineParameters)
 	- 'inside' line parameters (AbstractMapLineParameters)
-	- 'connecting' line parameters (AbstractMapLineParameters) [length for this line means section from outside line from boundaries]
+	- 'connecting' line parameters (AbstractMapLineParameters) [there is no length]
 	'''
 
 	DEFAULTS = {
