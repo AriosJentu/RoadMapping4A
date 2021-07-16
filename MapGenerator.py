@@ -5,9 +5,9 @@ import BasicElements
 import MapElements
 import Functions
 
-class Generated:
+class MapInfo:
 	'''
-	Generated - class with generated information about specific map 2d space
+	MapInfo - class with generated information about specific map 2d space
 	Containing parameters: 
 	- 'outside_lines': list of outside lines List[MapElements.MapLine]
 	- 'inside_lines': list of inside lines List[MapElements.MapLine]
@@ -147,7 +147,7 @@ class Generator:
 			factor = new_distance/distance
 
 			#Then calculate half-length for inside line by generation with noising this distance factor
-			halflength = self.noise_scale_length(generation)*self.inside_line.length/2
+			halflength = self.inside_line.length/(2*self.noise_scale_length(generation))
 
 			#Generate lines
 			gen_line = line.get_parallel_line(center*factor, halflength, self.inside_line)
@@ -183,7 +183,8 @@ class Generator:
 		lines = []
 		for i, v in enumerate(outside_points):
 			for j, _ in enumerate(v):
-				lines.append(MapElements.MapLine(outside_points[i][j], inside_points[i][j], self.connecting_line))
+				nearest = outside_points[i][j].get_nearest_point(inside_points[i])
+				lines.append(MapElements.MapLine(outside_points[i][j], nearest, self.connecting_line))
 
 		return lines
 
@@ -210,4 +211,4 @@ class Generator:
 		outside_circles = self.g_outside_circles
 		inside_circles = [self.g_inside_circle]
 
-		return Generated(outside_lines, inside_lines, connecting_lines, outside_circles, inside_circles)
+		return MapInfo(outside_lines, inside_lines, connecting_lines, outside_circles, inside_circles)
