@@ -1,4 +1,4 @@
-from math import atan, pi, sin, cos
+import math
 
 class Point:
 	'''
@@ -36,9 +36,9 @@ class Point:
 		
 		#To except division by zero, set default value for arctan(infty)
 		if dx == 0:
-			return pi/2
+			return math.pi/2
 
-		return atan(dy/dx)%pi
+		return math.atan(dy/dx)%math.pi
 
 	def get_second_point_from_angle_distance(self, angle: float, distance: float):
 		'''
@@ -47,10 +47,26 @@ class Point:
 		- 'distance' - distance between points (can be negative to orientate it in negative direction)
 		'''
 		deltapoint = Point(
-			round(distance*cos(angle%pi), 6), 
-			round(distance*sin(angle%pi), 6)
+			round(distance*math.cos(angle%math.pi), 6), 
+			round(distance*math.sin(angle%math.pi), 6)
 		)
 		return self+deltapoint
+
+	def get_nearest_point(self, points: list):
+		'''Function to get nearest point to this from list of points'''
+		nearest = points[0]
+		for point in points:
+			if self.get_distance(point) < self.get_distance(nearest):
+				nearest = point
+
+		return nearest
+
+	def scale_point_to_factor(self, point: 'Point', scale: float = 1):
+		'''Function to get given point with scaled distance on the same line'''
+		if not isinstance(point2, Point):
+			point2 = Point(0, 0)
+
+		return self + (point - self)*scale/self.get_distance(point)
 
 	#Other classic methods
 
@@ -138,6 +154,12 @@ class Line:
 	def get_boundaries(self):
 		'''Function to get boundary points of line'''
 		return self.point1, self.point2
+
+	def get_points_by_distance_on_line(self, distance: float):
+		'''Function to get points distant in the specific distance from boundaries, and located inside line'''
+		point1 = self.point1.scale_point_to_factor(self.point2, distance)
+		point2 = self.point2.scale_point_to_factor(self.point1, distance)
+		return point1, point2
 
 	def get_distance(self):
 		'''Function to get distance between boundary points'''
