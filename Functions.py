@@ -1,6 +1,9 @@
 import BasicElements
 
-class Functions:
+class Intersection:
+	'''
+	Intersection - static class to intersect elements in 2d space
+	'''
 
 	@staticmethod
 	def intersect_line_line(line1: BasicElements.Line, line2: BasicElements.Line):
