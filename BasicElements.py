@@ -62,12 +62,15 @@ class Point:
 
 		return nearest
 
-	def scale_point_to_factor(self, point: 'Point', scale: float = 1):
+	def get_scaled_point_to_factor(self, point: 'Point', scale: float = 1):
 		'''Function to get given point with scaled distance on the same line'''
 		if not isinstance(point, Point):
 			point2 = Point(0, 0)
 
 		return self + (point - self)*(scale/self.get_distance(point))
+
+	def get_xy_lists(self):
+		return [self.x], [self.y]
 
 	#Other classic methods
 
@@ -164,13 +167,13 @@ class Line:
 
 	def get_points_by_distance_on_line(self, distance: float):
 		'''Function to get points distant in the specific distance from boundaries, and located inside line'''
-		point1 = self.point1.scale_point_to_factor(self.point2, distance)
-		point2 = self.point2.scale_point_to_factor(self.point1, distance)
+		point1 = self.point1.get_scaled_point_to_factor(self.point2, distance)
+		point2 = self.point2.get_scaled_point_to_factor(self.point1, distance)
 		return point1, point2
 
 	def get_central_point(self):
 		'''Function to get point at center between boundaries of the line'''
-		return self.point1.scale_point_to_factor(self.point2, self.distance/2)
+		return self.point1.get_scaled_point_to_factor(self.point2, self.distance/2)
 
 	def get_parallel_line(self, point: Point = Point(0, 0), distance: float = 1):
 		'''Function to generate parallel line sector to this at the specific central point with specific distance from center to boundaries'''
@@ -208,6 +211,9 @@ class Line:
 		ycond = (ymin <= point.y <= ymax)
 
 		return xcond and ycond and self.is_point_on_line(point)
+
+	def get_xy_lists(self):
+		return [self.point1.x, self.point2.x], [self.point1.y, self.point2.y]
 
 	#Other classic methods
 
