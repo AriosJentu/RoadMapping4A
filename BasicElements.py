@@ -7,6 +7,7 @@ class Point:
 	- 'x' coordinate in space
 	- 'y' coordinate in space
 	'''
+	ROUND = -1
 
 	#Initializer
 	def __init__(self, x: float = 0, y: float = 0):
@@ -92,7 +93,13 @@ class Point:
 		return self.__mul__(1/number)
 
 	def __str__(self):
-		return f"Point({self.x}, {self.y})"
+		x = self.x
+		y = self.y
+		if self.ROUND >= 0:
+			x = round(x, self.ROUND)
+			y = round(y, self.ROUND)
+
+		return f"Point({x}, {y})"
 
 	def __repr__(self):
 		return self.__str__()
@@ -170,7 +177,7 @@ class Line:
 
 		if not isinstance(point, BasicElements.Point):
 			point = BasicElements.Point(0, 0)
-			
+
 		point1 = point.get_second_point_from_angle_distance(self.angle, distance)
 		point2 = point.get_second_point_from_angle_distance(self.angle, -distance)
 		return Line(point1, point2)
