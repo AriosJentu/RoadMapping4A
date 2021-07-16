@@ -48,3 +48,9 @@ print(InsideLine)
 print(ConnectingLine)
 print(OutsideCircle)
 print(InsideCircle)
+
+import matplotlib.pyplot as plt
+
+a, b = OutsideLine.get_xy_lists()
+plt.plot(a, b)
+plt.show()
