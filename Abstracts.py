@@ -41,9 +41,9 @@ class AbstractMapLines:
 	'''
 
 	DEFAULTS = {
-		"outside": AbstractMapLineParameters(1, 10),
-		"inside": AbstractMapLineParameters(1, 5),
-		"connecting": AbstractMapLineParameters(1, 2)
+		"outside": AbstractMapLineParameters(10, 10, 0),
+		"inside": AbstractMapLineParameters(5, 5, 1),
+		"connecting": AbstractMapLineParameters(2, 0, 3)
 	}
 
 	#Initializer
@@ -114,8 +114,8 @@ class AbstractMapCircles:
 	'''
 
 	DEFAULTS = {
-		"outside": AbstractMapCircleParameters(2),
-		"inside": AbstractMapCircleParameters(3),
+		"outside": AbstractMapCircleParameters(1),
+		"inside": AbstractMapCircleParameters(2),
 	}
 
 	#Initializer
