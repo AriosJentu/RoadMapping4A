@@ -63,10 +63,10 @@ class Point:
 
 	def scale_point_to_factor(self, point: 'Point', scale: float = 1):
 		'''Function to get given point with scaled distance on the same line'''
-		if not isinstance(point2, Point):
+		if not isinstance(point, Point):
 			point2 = Point(0, 0)
 
-		return self + (point - self)*scale/self.get_distance(point)
+		return self + (point - self)*(scale/self.get_distance(point))
 
 	#Other classic methods
 
@@ -160,6 +160,20 @@ class Line:
 		point1 = self.point1.scale_point_to_factor(self.point2, distance)
 		point2 = self.point2.scale_point_to_factor(self.point1, distance)
 		return point1, point2
+
+	def get_central_point(self):
+		'''Function to get point at center between boundaries of the line'''
+		return self.point1.scale_point_to_factor(self.point2, self.distance/2)
+
+	def get_parallel_line(self, point: Point = Point(0, 0), distance: float = 1):
+		'''Function to generate parallel line sector to this at the specific central point with specific distance from center to boundaries'''
+
+		if not isinstance(point, BasicElements.Point):
+			point = BasicElements.Point(0, 0)
+			
+		point1 = point.get_second_point_from_angle_distance(self.angle, distance)
+		point2 = point.get_second_point_from_angle_distance(self.angle, -distance)
+		return Line(point1, point2)
 
 	def get_distance(self):
 		'''Function to get distance between boundary points'''

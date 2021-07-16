@@ -52,6 +52,20 @@ class MapLine(BasicElements.Line):
 
 	#Getters
 
+	def get_parallel_line(self, 
+			point: BasicElements.Point = BasicElements.Point(0, 0), 
+			distance: float = 1, 
+			lineclass: Abstracts.AbstractMapLineParameters = DEFAULTS["lineclass"]
+	):
+		'''Function to generate parallel line sector to this at the specific central point with specific distance from center to boundaries for map element'''
+
+		if not isinstance(point, BasicElements.Point):
+			point = BasicElements.Point(0, 0)
+		
+		point1 = point.get_second_point_from_angle_distance(self.angle, distance)
+		point2 = point.get_second_point_from_angle_distance(self.angle, -distance)
+		return MapLine(point1, point2, lineclass)
+
 	def get_thickness(self):
 		return self.lineclass.thickness
 
