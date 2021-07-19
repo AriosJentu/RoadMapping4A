@@ -14,20 +14,80 @@ class MapInfo:
 	- 'connecting_lines': list of connecting lines List[MapElements.MapLine]
 	- 'outside_circles': list of outside circles List[MapElements.MapCircle]
 	- 'inside_circles': list of inside circles List[MapElements.MapCircle]
+	- 'connecting_circles': list of connecting circles List[MapElements.MapCircle]
 	'''
 	def __init__(self,
-			outside_lines: list,
-			inside_lines: list,
-			connecting_lines: list,
-			outside_circles: list,
-			inside_circles: list,
+			outside_lines: list[MapElements.MapLine],
+			inside_lines: list[MapElements.MapLine],
+			connecting_lines: list[MapElements.MapLine],
+			outside_circles: list[MapElements.MapCircle],
+			inside_circles: list[MapElements.MapCircle],
+			connecting_circles: list[MapElements.MapCircle],
 	):
 		self.outside_lines = outside_lines
 		self.inside_lines = inside_lines
 		self.connecting_lines = connecting_lines
 		self.outside_circles = outside_circles
 		self.inside_circles = inside_circles
+		self.connecting_circles = connecting_circles
 
+		self.lines = [
+			self.outside_lines, 
+			self.inside_lines, 
+			self.connecting_lines
+		]
+
+		self.circles = [
+			self.outside_circles, 
+			self.inside_circles,
+			self.connecting_circles
+		]
+
+		self.objects_lists = self.lines+self.circles
+
+	def move(self, offset: BasicElements.Point):
+		'''Function to generate updated MapInfo with moving all elements to the specific offset'''
+		
+		objects_lists = []
+		
+		for objects in self.objects_lists:
+			element_lists = []
+		
+			for element in objects:
+				new_element = element+offset
+				element_lists.append(new_element)
+
+			objects_lists.append(element_lists)
+
+		return MapInfo(*objects_lists)
+
+	def scale(self, factor: float = 1):
+		'''Function to generate updated MapInfo with scaling all elements to the specific factor'''
+		
+		objects_lists = []
+		
+		for objects in self.objects_lists:
+			element_lists = []
+
+			for element in objects:
+				new_element = element*factor
+				element_lists.append(new_element)
+
+			objects_lists.append(element_lists)
+
+		return MapInfo(*objects_lists)
+
+	def get_lines(self):
+		'''Function which returns iterator of all available lines'''
+		for lines in self.lines:
+			for line in lines:
+				yield line
+
+	def get_circles(self):
+		'''Function which returns iterator of all available circles'''
+		for circles in self.circles:
+			for circle in circles:
+				yield circle
 
 class Generator:
 	'''
@@ -38,6 +98,7 @@ class Generator:
 	- 'connecting_line' parameters [Abstracts.AbstractMapLineParameters]
 	- 'outside_circle' parameters [Abstracts.AbstractMapCircleParameters]
 	- 'inside_circle' parameters [Abstracts.AbstractMapCircleParameters]
+	- 'connecting_circle' parameters [Abstracts.AbstractMapCircleParameters]
 	- 'sides_count': count of the map sides
 	- 'generation_count: count of generations of inside lines
 	- 'noise_distance': function of one integer variable, which generates noise for distance between points
@@ -51,6 +112,7 @@ class Generator:
 			connecting_line: Abstracts.AbstractMapLineParameters = Abstracts.AbstractMapLines.DEFAULTS["connecting"],
 			outside_circle: Abstracts.AbstractMapCircleParameters = Abstracts.AbstractMapCircles.DEFAULTS["outside"],
 			inside_circle: Abstracts.AbstractMapCircleParameters = Abstracts.AbstractMapCircles.DEFAULTS["inside"],
+			connecting_circle: Abstracts.AbstractMapCircleParameters = Abstracts.AbstractMapCircles.DEFAULTS["connecting"],
 			sides_count: int = 3,
 			generation_count: int = 1,
 			noise_distance=lambda n: n,
@@ -62,6 +124,7 @@ class Generator:
 
 		self.outside_circle = outside_circle
 		self.inside_circle = inside_circle
+		self.connecting_circle = connecting_circle
 
 		self.sides_count = max(int(sides_count), 3)
 		self.generation_count = max(int(generation_count), 1)
@@ -75,6 +138,7 @@ class Generator:
 		self.g_connecting_lines = [self.generate_connecting_lines(i) for i in range(self.generation_count+1)]
 		self.g_outside_circles = self.generate_outside_circles()
 		self.g_inside_circle = self.generate_inside_circle()
+		self.g_connecting_circles = self.generate_connecting_circles()
 
 	#Generators
 
@@ -202,6 +266,18 @@ class Generator:
 		'''Function to generate inside circle in center of the coordinate system'''
 		return MapElements.MapCircle(BasicElements.Point(0, 0), self.inside_circle)
 
+	def generate_connecting_circles(self, generation: int = 1):
+		'''Function to generate connecting circles'''
+		boundary_points = self.generate_inside_pivot_points(generation)
+
+		circles = []
+		for _, list_boundary_points in enumerate(boundary_points):
+			for point in list_boundary_points:
+				circle = MapElements.MapCircle(point, self.connecting_circle)
+				circles.append(circle)
+
+		return circles
+
 	def generate(self):
 		'''Function to combine all information in specific format to visualize'''
 
@@ -210,5 +286,6 @@ class Generator:
 		connecting_lines = [line for lines in self.g_connecting_lines for line in lines]
 		outside_circles = self.g_outside_circles
 		inside_circles = [self.g_inside_circle]
+		connecting_circles = self.g_connecting_circles
 
-		return MapInfo(outside_lines, inside_lines, connecting_lines, outside_circles, inside_circles)
+		return MapInfo(outside_lines, inside_lines, connecting_lines, outside_circles, inside_circles, connecting_circles)
