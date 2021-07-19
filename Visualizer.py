@@ -21,6 +21,25 @@ class Visualizer:
 		updated_map_info = self.map_info.scale(-self.pixels_per_unit)	#Negative because image coordinate system is inverted in terms of real coordinate system for Y axis
 		updated_map_info = updated_map_info.move(offset)
 
+		for circle in updated_map_info.get_circles():
+			print(circle)
+			circle.scale(self.pixels_per_unit)
+			
+			fill = (0, 0, 0, 255)
+			outline = (0, 0, 0, 0)
+			width = 0
+			if circle.get_thickness() > 0:
+				fill = (0, 0, 0, 0)
+				outline = (0, 0, 0, 255)
+				width = circle.get_thickness()*self.pixels_per_unit
+
+			image.ellipse(
+				[point.int().get_coordinates() for point in circle.get_boundary_box()], 
+				fill=fill,
+				outline=outline, 
+				width=width
+			)
+
 		for line in updated_map_info.get_lines():
 			image.line(
 				[point.int().get_coordinates() for point in line.get_boundaries()], 
@@ -28,17 +47,9 @@ class Visualizer:
 				width=line.get_thickness()*self.pixels_per_unit
 			)
 
-		for circle in updated_map_info.get_circles():
-			print(circle)
-			circle.scale(self.pixels_per_unit)
-			image.ellipse(
-				[point.int().get_coordinates() for point in circle.get_boundary_box()], 
-				fill=(0, 0, 0, 255), 
-			)
-
 		blank.save(filename, "PNG")
 
 
-gen = MapGenerator.Generator(sides_count=3, generation_count=1).generate()
+gen = MapGenerator.Generator(sides_count=3, rings_count=1, generation_count=1).generate()
 vis = Visualizer(gen)
 vis.draw_plot("Hello world.png")
