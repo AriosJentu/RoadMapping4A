@@ -15,6 +15,7 @@ class MapInfo:
 	- 'connecting_lines': list of connecting lines List[MapElements.MapLine]
 	- 'outside_circles': list of outside circles List[MapElements.MapCircle]
 	- 'inside_circles': list of inside circles List[MapElements.MapCircle]
+	- 'inside_rings': list of inside rings List[MapElements.MapCircle]
 	- 'connecting_circles': list of connecting circles List[MapElements.MapCircle]
 	'''
 	def __init__(self,
@@ -23,6 +24,7 @@ class MapInfo:
 			central_lines: list[MapElements.MapLine],
 			connecting_lines: list[MapElements.MapLine],
 			outside_circles: list[MapElements.MapCircle],
+			inside_rings: list[MapElements.MapCircle],
 			inside_circles: list[MapElements.MapCircle],
 			connecting_circles: list[MapElements.MapCircle],
 	):
@@ -31,6 +33,7 @@ class MapInfo:
 		self.central_lines = central_lines
 		self.connecting_lines = connecting_lines
 		self.outside_circles = outside_circles
+		self.inside_rings = inside_rings
 		self.inside_circles = inside_circles
 		self.connecting_circles = connecting_circles
 
@@ -43,6 +46,7 @@ class MapInfo:
 
 		self.circles = [
 			self.outside_circles, 
+			self.inside_rings,
 			self.inside_circles,
 			self.connecting_circles
 		]
@@ -102,6 +106,7 @@ class Generator:
 	- 'connecting_line' parameters [Abstracts.AbstractMapLineParameters]
 	- 'outside_circle' parameters [Abstracts.AbstractMapCircleParameters]
 	- 'inside_circle' parameters [Abstracts.AbstractMapCircleParameters]
+	- 'inside_rings' parameters [Abstracts.AbstractMapCircleParameters]
 	- 'connecting_circle' parameters [Abstracts.AbstractMapCircleParameters]
 	- 'sides_count': count of the map sides
 	- 'generation_count: count of generations of inside lines
@@ -117,8 +122,10 @@ class Generator:
 			connecting_line: Abstracts.AbstractMapLineParameters = Abstracts.AbstractMapLines.DEFAULTS["connecting"],
 			outside_circle: Abstracts.AbstractMapCircleParameters = Abstracts.AbstractMapCircles.DEFAULTS["outside"],
 			inside_circle: Abstracts.AbstractMapCircleParameters = Abstracts.AbstractMapCircles.DEFAULTS["inside"],
+			inside_rings: Abstracts.AbstractMapCircleParameters = Abstracts.AbstractMapCircles.DEFAULTS["rings"],
 			connecting_circle: Abstracts.AbstractMapCircleParameters = Abstracts.AbstractMapCircles.DEFAULTS["connecting"],
 			sides_count: int = 3,
+			rings_count: int = 0,
 			generation_count: int = 1,
 			noise_distance=lambda n: n,
 			noise_scale_length=lambda n: n,
@@ -130,9 +137,11 @@ class Generator:
 
 		self.outside_circle = outside_circle
 		self.inside_circle = inside_circle
+		self.inside_rings = inside_rings
 		self.connecting_circle = connecting_circle
 
 		self.sides_count = max(int(sides_count), 3)
+		self.rings_count = max(int(rings_count), 0)
 		self.generation_count = max(int(generation_count), 1)
 
 		self.noise_distance = noise_distance
@@ -145,7 +154,8 @@ class Generator:
 		self.g_connecting_lines = [self.generate_connecting_lines(i) for i in range(self.generation_count+1)]
 		self.g_outside_circles = self.generate_outside_circles()
 		self.g_inside_circle = self.generate_inside_circle()
-		self.g_connecting_circles = self.generate_connecting_circles()
+		self.g_inside_rings = [self.generate_inside_ring(i+1) for i in range(self.rings_count)]
+		self.g_connecting_circles = [self.generate_connecting_circles(i) for i in range(1, self.generation_count+1)]
 
 	#Generators
 
@@ -285,6 +295,12 @@ class Generator:
 		'''Function to generate inside circle in center of the coordinate system'''
 		return MapElements.MapCircle(BasicElements.Point(0, 0), self.inside_circle)
 
+	def generate_inside_ring(self, generation: int = 1):
+		circle = MapElements.MapCircle(BasicElements.Point(0, 0), self.inside_rings, True)
+		circle.scale(self.noise_scale_length(generation))
+		print(circle.radius)
+		return circle
+
 	def generate_connecting_circles(self, generation: int = 1):
 		'''Function to generate connecting circles'''
 		boundary_points = self.generate_inside_pivot_points(generation)
@@ -305,7 +321,8 @@ class Generator:
 		central_lines = self.g_central_lines
 		connecting_lines = [line for lines in self.g_connecting_lines for line in lines]
 		outside_circles = self.g_outside_circles
+		inside_rings = self.g_inside_rings[::-1]
 		inside_circles = [self.g_inside_circle]
-		connecting_circles = self.g_connecting_circles
+		connecting_circles = [circle for circles in self.g_connecting_circles for circle in circles]
 
-		return MapInfo(outside_lines, inside_lines, central_lines, connecting_lines, outside_circles, inside_circles, connecting_circles)
+		return MapInfo(outside_lines, inside_lines, central_lines, connecting_lines, outside_circles, inside_rings, inside_circles, connecting_circles)
