@@ -13,6 +13,7 @@ class AbstractMapLineParameters:
 	Comment:
 	For 'outside' line there is only thickness and length
 	For 'inside' line there is thickness, length, and distance from previous line (must be less than smallest distance to outside line)
+	For 'central' line there is only thickness of the line
 	For 'connecting' line there is thickness and distance (distance means separation from boundaries of previous line)
 	'''
 
@@ -37,27 +38,32 @@ class AbstractMapLines:
 	Contains parameters:
 	- 'outside' line parameters (AbstractMapLineParameters)
 	- 'inside' line parameters (AbstractMapLineParameters)
+	- 'central' line parameters (AbstractMapLineParameters) [there is no length and distance]
 	- 'connecting' line parameters (AbstractMapLineParameters) [there is no length]
 	'''
 
 	DEFAULTS = {
 		"outside": AbstractMapLineParameters(8, 100, 0),
 		"inside": AbstractMapLineParameters(4, 30, 10),
-		"connecting": AbstractMapLineParameters(2, 0, 15)
+		"central": AbstractMapLineParameters(4, 30, 10),
+		"connecting": AbstractMapLineParameters(2, 0, 15),
 	}
 
 	#Initializer
 	def __init__(self, 
 			outside: AbstractMapLineParameters = DEFAULTS["outside"], 
 			inside: AbstractMapLineParameters = DEFAULTS["inside"], 
+			central: AbstractMapLineParameters = DEFAULTS["central"], 
 			connecting: AbstractMapLineParameters = DEFAULTS["connecting"]
 	):
 		self.outside = outside
 		self.inside = inside
+		self.central = central
 		self.connecting = connecting
 		self.types = {
 			"outside": self.outside, 
 			"inside": self.inside, 
+			"central": self.central,
 			"connecting": self.connecting,
 			"default": self.connecting
 		}
@@ -74,10 +80,11 @@ class AbstractMapLines:
 		return f"""AbstractMapLines: 
 		Outside \t- {self.outside}
 		Inside  \t- {self.inside}
+		Central \t- {self.central}
 		Connecting \t- {self.connecting}"""
 
 	def __repr__(self):
-		return f"AbstractMapLines[outside={self.outside}, inside={self.inside}, connecting={self.connecting}]"
+		return f"AbstractMapLines[outside={self.outside}, inside={self.inside}, central={self.central}, connecting={self.connecting}]"
 
 
 class AbstractMapCircleParameters:

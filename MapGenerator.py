@@ -11,6 +11,7 @@ class MapInfo:
 	Containing parameters: 
 	- 'outside_lines': list of outside lines List[MapElements.MapLine]
 	- 'inside_lines': list of inside lines List[MapElements.MapLine]
+	- 'central_lines': list of cenral lines List[MapElements.MapLine] connecing center and sides of the figure
 	- 'connecting_lines': list of connecting lines List[MapElements.MapLine]
 	- 'outside_circles': list of outside circles List[MapElements.MapCircle]
 	- 'inside_circles': list of inside circles List[MapElements.MapCircle]
@@ -19,6 +20,7 @@ class MapInfo:
 	def __init__(self,
 			outside_lines: list[MapElements.MapLine],
 			inside_lines: list[MapElements.MapLine],
+			central_lines: list[MapElements.MapLine],
 			connecting_lines: list[MapElements.MapLine],
 			outside_circles: list[MapElements.MapCircle],
 			inside_circles: list[MapElements.MapCircle],
@@ -26,6 +28,7 @@ class MapInfo:
 	):
 		self.outside_lines = outside_lines
 		self.inside_lines = inside_lines
+		self.central_lines = central_lines
 		self.connecting_lines = connecting_lines
 		self.outside_circles = outside_circles
 		self.inside_circles = inside_circles
@@ -34,6 +37,7 @@ class MapInfo:
 		self.lines = [
 			self.outside_lines, 
 			self.inside_lines, 
+			self.central_lines,
 			self.connecting_lines
 		]
 
@@ -109,6 +113,7 @@ class Generator:
 	def __init__(self,
 			outside_line: Abstracts.AbstractMapLineParameters = Abstracts.AbstractMapLines.DEFAULTS["outside"],
 			inside_line: Abstracts.AbstractMapLineParameters = Abstracts.AbstractMapLines.DEFAULTS["inside"],
+			central_line: Abstracts.AbstractMapLineParameters = Abstracts.AbstractMapLines.DEFAULTS["central"],
 			connecting_line: Abstracts.AbstractMapLineParameters = Abstracts.AbstractMapLines.DEFAULTS["connecting"],
 			outside_circle: Abstracts.AbstractMapCircleParameters = Abstracts.AbstractMapCircles.DEFAULTS["outside"],
 			inside_circle: Abstracts.AbstractMapCircleParameters = Abstracts.AbstractMapCircles.DEFAULTS["inside"],
@@ -120,6 +125,7 @@ class Generator:
 	):
 		self.outside_line = outside_line
 		self.inside_line = inside_line
+		self.central_line = central_line
 		self.connecting_line = connecting_line
 
 		self.outside_circle = outside_circle
@@ -135,6 +141,7 @@ class Generator:
 		#Generation
 		self.g_outside_lines = self.generate_outside_lines()
 		self.g_inside_lines = [self.generate_inside_lines(i+1) for i in range(self.generation_count)]
+		self.g_central_lines = self.generate_central_lines()
 		self.g_connecting_lines = [self.generate_connecting_lines(i) for i in range(self.generation_count+1)]
 		self.g_outside_circles = self.generate_outside_circles()
 		self.g_inside_circle = self.generate_inside_circle()
@@ -219,6 +226,18 @@ class Generator:
 
 		return gen_lines
 
+	def generate_central_lines(self):
+		'''Function to generate central connecting lines by pivot points'''
+		lines = []
+		points = self.generate_pivot_points()
+		
+		for i, point in enumerate(points):
+			#Connect two points
+			line = MapElements.MapLine(point, BasicElements.Point(0, 0), self.central_line)
+			lines.append(line)
+
+		return lines
+
 	def generate_connecting_points(self, generation: int = 0):
 		'''
 		Function to generate connecting points on specific generation
@@ -283,9 +302,10 @@ class Generator:
 
 		outside_lines = self.g_outside_lines
 		inside_lines = [line for lines in self.g_inside_lines for line in lines]
+		central_lines = self.g_central_lines
 		connecting_lines = [line for lines in self.g_connecting_lines for line in lines]
 		outside_circles = self.g_outside_circles
 		inside_circles = [self.g_inside_circle]
 		connecting_circles = self.g_connecting_circles
 
-		return MapInfo(outside_lines, inside_lines, connecting_lines, outside_circles, inside_circles, connecting_circles)
+		return MapInfo(outside_lines, inside_lines, central_lines, connecting_lines, outside_circles, inside_circles, connecting_circles)
