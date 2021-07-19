@@ -43,9 +43,9 @@ class AbstractMapLines:
 	'''
 
 	DEFAULTS = {
-		"outside": AbstractMapLineParameters(8, 100, 0),
-		"inside": AbstractMapLineParameters(4, 30, 10),
-		"central": AbstractMapLineParameters(4, 30, 10),
+		"outside": AbstractMapLineParameters(3, 100, 0),
+		"inside": AbstractMapLineParameters(2, 50, 10),
+		"central": AbstractMapLineParameters(2, 0, 0),
 		"connecting": AbstractMapLineParameters(2, 0, 15),
 	}
 
@@ -95,8 +95,9 @@ class AbstractMapCircleParameters:
 	'''
 
 	#Initializer
-	def __init__(self, radius: float = 3):
+	def __init__(self, radius: float = 3, thickness: float = -1):
 		self.radius = radius
+		self.thickness = thickness
 
 	#Setters
 
@@ -106,10 +107,10 @@ class AbstractMapCircleParameters:
 	#Other classic methods
 
 	def __str__(self):
-		return f"AbstractMapCircleParameters: Radius - '{self.radius}'"
+		return f"AbstractMapCircleParameters: Radius - '{self.radius}', Thickness - '{self.thickness}'"
 
 	def __repr__(self):
-		return f"AbstractMapCircleParameters{{radius={self.radius}}}"
+		return f"AbstractMapCircleParameters{{radius={self.radius}, thickness={self.thickness}}}"
 
 
 class AbstractMapCircles:
@@ -121,23 +122,27 @@ class AbstractMapCircles:
 	'''
 
 	DEFAULTS = {
-		"outside": AbstractMapCircleParameters(10),
-		"inside": AbstractMapCircleParameters(20),
-		"connecting": AbstractMapCircleParameters(4),
+		"outside": AbstractMapCircleParameters(5),
+		"inside": AbstractMapCircleParameters(6),
+		"rings": AbstractMapCircleParameters(15, 2),
+		"connecting": AbstractMapCircleParameters(2),
 	}
 
 	#Initializer
 	def __init__(self, 
 			outside: AbstractMapCircleParameters = DEFAULTS["outside"], 
 			inside: AbstractMapCircleParameters = DEFAULTS["inside"], 
+			rings: AbstractMapCircleParameters = DEFAULTS["rings"],
 			connecting: AbstractMapCircleParameters = DEFAULTS["connecting"], 
 	):
 		self.outside = outside
 		self.inside = inside
+		self.rings = rings
 		self.connecting = connecting
 		self.types = {
 			"outside": self.outside, 
 			"inside": self.inside, 
+			"rings": self.rings,
 			"connecting": self.connecting, 
 			"default": self.outside
 		}
@@ -154,7 +159,8 @@ class AbstractMapCircles:
 		return f"""AbstractMapCircles: 
 		Outside \t- {self.outside}
 		Inside  \t- {self.inside}
+		Rings   \t- {self.rings}
 		Connecting\t- {self.connecting}"""
 
 	def __repr__(self):
-		return f"AbstractMapCircles[outside={self.outside}, inside={self.inside}, connecting={self.connecting}]"
+		return f"AbstractMapCircles[outside={self.outside}, inside={self.inside}, rings={self.rings}, connecting={self.connecting}]"
