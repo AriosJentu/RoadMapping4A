@@ -18,7 +18,7 @@ class AbstractMapLineParameters:
 	'''
 
 	#Initializer
-	def __init__(self, thickness: float = 1, length: float = 1, distance: float = 1):
+	def __init__(self, thickness: float = 1, length: float = 0, distance: float = 0):
 		self.thickness = thickness
 		self.length = length
 		self.distance = distance

@@ -11,7 +11,7 @@ class Visualizer:
 		self.pixels_per_unit = pixels_per_unit
 		self.image_size = image_size
 
-	def draw_plot(self, filename: str):
+	def save_image(self, filename: str):
 		
 		blank = Image.new("RGBA", self.image_size, (255,255,255,0))
 		image = ImageDraw.Draw(blank)
@@ -48,8 +48,4 @@ class Visualizer:
 			)
 
 		blank.save(filename, "PNG")
-
-
-gen = MapGenerator.Generator(sides_count=3, rings_count=1, generation_count=1).generate()
-vis = Visualizer(gen)
-vis.draw_plot("Hello world.png")
+		
