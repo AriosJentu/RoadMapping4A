@@ -110,11 +110,20 @@ class MapCircle(BasicElements.Circle):
 	#Initializer
 	def __init__(self, 
 		center: BasicElements.Point = DEFAULTS["center"],
-		circleclass: Abstracts.AbstractMapCircleParameters = DEFAULTS["circleclass"]
+		circleclass: Abstracts.AbstractMapCircleParameters = DEFAULTS["circleclass"],
+		fixed_radius: bool = False,
+		radius: float =-1
 	):
 
 		super().__init__(center, circleclass.radius)
+		if fixed_radius and radius > 0:
+			self.radius = radius
+
 		self.circleclass = circleclass
+		self.fixed_radius = fixed_radius
+
+	def get_thickness(self):
+		return self.circleclass.thickness
 
 	#Other classic methods
 
@@ -122,10 +131,10 @@ class MapCircle(BasicElements.Circle):
 		if not isinstance(point, BasicElements.Point):
 			point = BasicElements.Point(0, 0)
 
-		return MapCircle(self.center + point, self.circleclass)
+		return MapCircle(self.center + point, self.circleclass, self.fixed_radius, self.radius)
 
 	def __mul__(self, number: float):
-		return MapCircle(self.center*number, self.circleclass)
+		return MapCircle(self.center*number, self.circleclass, self.fixed_radius, self.radius)
 
 	def __str__(self):
 		return f"""MapCircle:
