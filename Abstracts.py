@@ -41,9 +41,9 @@ class AbstractMapLines:
 	'''
 
 	DEFAULTS = {
-		"outside": AbstractMapLineParameters(10, 10, 0),
-		"inside": AbstractMapLineParameters(5, 5, 1),
-		"connecting": AbstractMapLineParameters(2, 0, 3)
+		"outside": AbstractMapLineParameters(8, 100, 0),
+		"inside": AbstractMapLineParameters(4, 30, 10),
+		"connecting": AbstractMapLineParameters(2, 0, 15)
 	}
 
 	#Initializer
@@ -114,20 +114,24 @@ class AbstractMapCircles:
 	'''
 
 	DEFAULTS = {
-		"outside": AbstractMapCircleParameters(1),
-		"inside": AbstractMapCircleParameters(2),
+		"outside": AbstractMapCircleParameters(10),
+		"inside": AbstractMapCircleParameters(20),
+		"connecting": AbstractMapCircleParameters(4),
 	}
 
 	#Initializer
 	def __init__(self, 
 			outside: AbstractMapCircleParameters = DEFAULTS["outside"], 
 			inside: AbstractMapCircleParameters = DEFAULTS["inside"], 
+			connecting: AbstractMapCircleParameters = DEFAULTS["connecting"], 
 	):
 		self.outside = outside
 		self.inside = inside
+		self.connecting = connecting
 		self.types = {
 			"outside": self.outside, 
 			"inside": self.inside, 
+			"connecting": self.connecting, 
 			"default": self.outside
 		}
 
@@ -142,7 +146,8 @@ class AbstractMapCircles:
 	def __str__(self):
 		return f"""AbstractMapCircles: 
 		Outside \t- {self.outside}
-		Inside  \t- {self.inside}"""
+		Inside  \t- {self.inside}
+		Connecting\t- {self.connecting}"""
 
 	def __repr__(self):
-		return f"AbstractMapCircles[outside={self.outside}, inside={self.inside}]"
+		return f"AbstractMapCircles[outside={self.outside}, inside={self.inside}, connecting={self.connecting}]"
