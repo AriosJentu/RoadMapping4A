@@ -73,6 +73,14 @@ class MapLine(BasicElements.Line):
 		return self.lineclass.length
 
 	#Other classic methods
+	def __add__(self, point: BasicElements.Point):
+		if not isinstance(point, BasicElements.Point):
+			point = BasicElements.Point(0, 0)
+
+		return MapLine(self.point1 + point, self.point2 + point, self.lineclass)
+
+	def __mul__(self, number: float):
+		return MapLine(self.point1*number, self.point2*number, self.lineclass)
 
 	def __str__(self):
 		return f"""MapLine:
@@ -110,6 +118,15 @@ class MapCircle(BasicElements.Circle):
 
 	#Other classic methods
 
+	def __add__(self, point: BasicElements.Point):
+		if not isinstance(point, BasicElements.Point):
+			point = BasicElements.Point(0, 0)
+
+		return MapCircle(self.center + point, self.circleclass)
+
+	def __mul__(self, number: float):
+		return MapCircle(self.center*number, self.circleclass)
+
 	def __str__(self):
 		return f"""MapCircle:
 		Center: \t{self.center}, 
@@ -117,5 +134,5 @@ class MapCircle(BasicElements.Circle):
 		Class:  \t{self.circleclass}"""
 
 	def __repr__(self):
-		return f"MapCircle[c: {self.point}, r: {self.radius}, cls: {self.circleclass}]"
+		return f"MapCircle[c: {self.center}, r: {self.radius}, cls: {self.circleclass}]"
 
