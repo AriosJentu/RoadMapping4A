@@ -1,8 +1,8 @@
-import Abstracts
-import BasicElements
-import MapElements
-import MapGenerator
-import Visualizer
+import Scripts.Abstracts as Abstracts
+import Scripts.BasicElements as BasicElements
+import Scripts.MapElements as MapElements
+import Scripts.MapGenerator as MapGenerator
+import Scripts.Visualizer as Visualizer
 
 def test_1():
 
@@ -59,13 +59,13 @@ def test_2():
 	outside_line_length = 100
 	
 	inside_line_thickness = 2
-	inside_line_length = 60
+	inside_line_length = 40
 	inside_line_distance_from_previous = 10
 	
 	central_line_thickness = 2
 	
 	connecting_line_thickness = 2
-	connecting_line_separation_distance = 15
+	connecting_line_separation_distance = 20
 
 	outside_circle_radius = 5
 	inside_circle_radius = 6
