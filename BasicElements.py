@@ -72,6 +72,15 @@ class Point:
 	def get_xy_lists(self):
 		return [self.x], [self.y]
 
+	def get_coordinates(self):
+		return self.x, self.y
+
+	def round(self, signs: int = 0):
+		return Point(round(self.x, signs), round(self.y, signs))
+
+	def int(self):
+		return Point(int(self.x), int(self.y))
+
 	#Other classic methods
 
 	def __add__(self, point2: 'Point'):
@@ -92,7 +101,7 @@ class Point:
 	def __rsub__(self, point2: 'Point'):
 		return point2.__add__(self.__mul__(-1))
 
-	def __div__(self, number: float):
+	def __truediv__(self, number: float):
 		return self.__mul__(1/number)
 
 	def __str__(self):
@@ -217,6 +226,21 @@ class Line:
 
 	#Other classic methods
 
+	def __add__(self, point: Point):
+		if not isinstance(point, Point):
+			point = Point(0, 0)
+
+		return Line(self.point1 + point, self.point2 + point)
+
+	def __mul__(self, number: float):
+		return Line(self.point1*number, self.point2*number)
+
+	def __sub__(self, point: Point):
+		return self.__add__(point.__mul__(-1))
+
+	def __truediv__(self, number: float):
+		return self.__mul__(1/number)
+
 	def __str__(self):
 		return f"""Line:
 		Point 1: \t{self.point1}, 
@@ -261,6 +285,13 @@ class Circle:
 		'''Function to get radius of the circle'''
 		return self.radius
 
+	def scale(self, scale_factor: float = 1):
+		self.radius *= scale_factor
+
+	def get_boundary_box(self, scale_factor: float = 1):
+		delta = Point(self.radius, self.radius)*scale_factor
+		return self.center - delta, self.center + delta 
+
 	def is_point_inside(self, point: Point = Point(0, 0)):
 		'''
 		Function to get information - is point located inside circle
@@ -274,6 +305,21 @@ class Circle:
 		return self.get_equation()(point) == 0
 
 	#Other classic methods
+
+	def __add__(self, point: Point):
+		if not isinstance(point, Point):
+			point = Point(0, 0)
+
+		return Circle(self.center + point, self.radius)
+
+	def __mul__(self, number: float):
+		return Circle(self.center*number, self.radius*number)
+
+	def __sub__(self, point: Point):
+		return self.__add__(point.__mul__(-1))
+
+	def __truediv__(self, number: float):
+		return self.__mul__(1/number)
 
 	def __str__(self):
 		return f"""Circle:
