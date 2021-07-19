@@ -1,9 +1,9 @@
 import math
 
-import Abstracts
-import BasicElements
-import MapElements
-import Functions
+from . import Abstracts
+from . import BasicElements
+from . import MapElements
+from . import Functions
 
 class MapInfo:
 	'''

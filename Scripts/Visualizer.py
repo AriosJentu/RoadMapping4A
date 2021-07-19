@@ -1,8 +1,8 @@
 from PIL import Image, ImageDraw
 
-import BasicElements
-import MapElements
-import MapGenerator
+from . import BasicElements
+from . import MapElements
+from . import MapGenerator
 
 class Visualizer:
 

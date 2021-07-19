@@ -1,4 +1,4 @@
-import BasicElements
+from . import BasicElements
 
 class Intersection:
 	'''

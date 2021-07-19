@@ -1,5 +1,5 @@
-import Abstracts
-import BasicElements
+from . import Abstracts
+from . import BasicElements
 
 class MapLine(BasicElements.Line):
 	'''
