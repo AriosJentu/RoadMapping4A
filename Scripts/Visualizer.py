@@ -12,18 +12,24 @@ class Visualizer:
 		self.image_size = image_size
 		self.blur_pixels = blur_pixels
 
-	def save_image(self, filename: str):
-		
-		blank = Image.new("RGBA", self.image_size, (255,255,255,0))
-		image = ImageDraw.Draw(blank)
-
+	def get_offset_map_info(self) -> MapGenerator.MapInfo:
+		'''Function to get new map information with Image offsets'''
 		offset = BasicElements.Point(*self.image_size)/2
 
 		updated_map_info = self.map_info.scale(-self.pixels_per_unit)	#Negative because image coordinate system is inverted in terms of real coordinate system for Y axis
 		updated_map_info = updated_map_info.move(offset)
 
+		return updated_map_info
+
+	def get_map_image(self) -> Image:
+		'''Function to draw road map for this map info'''
+
+		blank = Image.new("RGBA", self.image_size, (255,255,255,0))
+		image = ImageDraw.Draw(blank)
+	
+		updated_map_info = self.get_offset_map_info()
+
 		for circle in updated_map_info.get_circles():
-			print(circle)
 			circle.scale(self.pixels_per_unit)
 			
 			fill = (0, 0, 0, 255)
@@ -48,7 +54,44 @@ class Visualizer:
 				width=line.get_thickness()*self.pixels_per_unit
 			)
 
-		blank = blank.filter(ImageFilter.GaussianBlur(self.blur_pixels))
+		return blank
+
+	def get_map_boundaries_image(self) -> Image:
+		'''Function to draw boundaries of the image'''
+
+		blank = Image.new("RGBA", self.image_size, (255, 255, 255, 0))
+		image = ImageDraw.Draw(blank)
+
+		updated_map_info = self.get_offset_map_info()
+
+		image.polygon(
+			[
+				point.int().get_coordinates()
+				for point in updated_map_info.get_boundaries()
+			], fill=(255, 255, 255, 255)
+		)
+
+		return blank
+
+	def apply_blur_to_image(self, image: Image) -> Image:
+		'''Function to apply blur to image'''
+		image = image.filter(ImageFilter.GaussianBlur(self.blur_pixels))
+		return image
+
+	def merge_layers(self, layers: list[Image]) -> Image:
+		'''Function to merge layers containing images'''
+		blank = Image.new("RGBA", self.image_size, (255, 255, 255, 0))
+		for image in layers:
+			blank = Image.alpha_composite(blank, image)
+
+		return blank
+
+	def save_image(self, filename: str):
+		'''Function to save image to file'''
+		blank = self.get_map_image()
+		blank = self.apply_blur_to_image(blank)
+		boundaries = self.get_map_boundaries_image()
+		blank = self.merge_layers([boundaries, blank])
 
 		blank.save(filename, "PNG")
 		
