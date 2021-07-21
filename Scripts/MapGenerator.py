@@ -23,6 +23,7 @@ class MapInfo:
 			inside_lines: list[MapElements.MapLine],
 			central_lines: list[MapElements.MapLine],
 			connecting_lines: list[MapElements.MapLine],
+			sector_lines: list[MapElements.MapLine],
 			outside_circles: list[MapElements.MapCircle],
 			inside_rings: list[MapElements.MapCircle],
 			inside_circles: list[MapElements.MapCircle],
@@ -32,6 +33,7 @@ class MapInfo:
 		self.inside_lines = inside_lines
 		self.central_lines = central_lines
 		self.connecting_lines = connecting_lines
+		self.sector_lines = sector_lines
 		self.outside_circles = outside_circles
 		self.inside_rings = inside_rings
 		self.inside_circles = inside_circles
@@ -41,14 +43,15 @@ class MapInfo:
 			self.outside_lines, 
 			self.inside_lines, 
 			self.central_lines,
-			self.connecting_lines
+			self.connecting_lines,
+			self.sector_lines,
 		]
 
 		self.circles = [
 			self.outside_circles, 
 			self.inside_rings,
 			self.inside_circles,
-			self.connecting_circles
+			self.connecting_circles,
 		]
 
 		self.objects_lists = self.lines+self.circles
@@ -126,6 +129,7 @@ class Generator:
 			connecting_circle: Abstracts.AbstractMapCircleParameters = Abstracts.AbstractMapCircles.DEFAULTS["connecting"],
 			sides_count: int = 3,
 			rings_count: int = 0,
+			sector_subdivisions: int = 0,
 			generation_count: int = 1,
 			noise_distance=lambda n: n,
 			noise_scale_length=lambda n: n,
@@ -142,6 +146,7 @@ class Generator:
 
 		self.sides_count = max(int(sides_count), 3)
 		self.rings_count = max(int(rings_count), 0)
+		self.sector_subdivisions = max(int(sector_subdivisions), 0)
 		self.generation_count = max(int(generation_count), 1)
 
 		self.noise_distance = noise_distance
@@ -152,6 +157,7 @@ class Generator:
 		self.g_inside_lines = [self.generate_inside_lines(i+1) for i in range(self.generation_count)]
 		self.g_central_lines = self.generate_central_lines()
 		self.g_connecting_lines = [self.generate_connecting_lines(i) for i in range(self.generation_count+1)]
+		self.g_sector_lines = [self.generate_sector_lines(i) for i in range(self.generation_count)]
 		self.g_outside_circles = self.generate_outside_circles()
 		self.g_inside_circle = self.generate_inside_circle()
 		self.g_inside_rings = [self.generate_inside_ring(i+1) for i in range(self.rings_count)]
@@ -272,12 +278,60 @@ class Generator:
 		#Generate list of points
 		outside_points = self.generate_connecting_points(generation)
 		inside_points = self.generate_inside_pivot_points(generation+1)
-		
+
 		lines = []
-		for i, v in enumerate(outside_points):
-			for j, _ in enumerate(v):
-				nearest = outside_points[i][j].get_nearest_point(inside_points[i])
-				lines.append(MapElements.MapLine(outside_points[i][j], nearest, self.connecting_line))
+		for list_index, outside_pair in enumerate(outside_points):
+			
+			if len(outside_pair) > 1:
+				
+				outside_line = BasicElements.Line(*outside_pair)
+				inside_line = BasicElements.Line(*inside_points[list_index])
+				
+				if not outside_line.is_lines_in_one_direction(inside_line):
+					inside_line.reverse_direction()
+
+				for index, point in enumerate(outside_line.get_boundaries()):
+					lines.append(MapElements.MapLine(point, inside_line.get_boundaries()[index], self.connecting_line))
+
+			else:
+				outside_point = outside_pair[0]
+				inside_point = inside_points[list_index][0]
+				lines.append(MapElements.MapLine(outside_point, inside_point, self.connecting_line))
+
+		return lines
+
+	def generate_sector_lines(self, generation: int = 0):
+		'''Function to generate sector lines. Generation must be less than possible count of generations'''
+		outside_points = self.generate_connecting_points(generation)
+		inside_points = self.generate_inside_pivot_points(generation+1)
+
+		outside_lines = []
+		inside_lines = []
+
+		for i in range(len(outside_points)):
+			outside_lines.append(BasicElements.Line(*outside_points[i]))
+			inside_lines.append(BasicElements.Line(*inside_points[i]))
+
+		outside_sector_points = []
+		inside_sector_points = []
+	
+		for line in outside_lines:
+			outside_sector_points.append(line.get_subdivision_points(self.sector_subdivisions))
+
+		for line in inside_lines:
+			inside_sector_points.append(line.get_subdivision_points(self.sector_subdivisions))
+
+		lines = []
+		for points_list_index in range(len(outside_sector_points)):
+
+			outside_line = BasicElements.Line(*outside_sector_points[points_list_index])
+			inside_line = BasicElements.Line(*inside_sector_points[points_list_index])
+				
+			if not outside_line.is_lines_in_one_direction(inside_line):
+				inside_line.reverse_direction()
+
+			for index, point in enumerate(outside_line.get_boundaries()):
+				lines.append(MapElements.MapLine(point, inside_line.get_boundaries()[index], self.connecting_line))
 
 		return lines
 
@@ -320,9 +374,10 @@ class Generator:
 		inside_lines = [line for lines in self.g_inside_lines for line in lines]
 		central_lines = self.g_central_lines
 		connecting_lines = [line for lines in self.g_connecting_lines for line in lines]
+		sector_lines = [line for lines in self.g_sector_lines for line in lines]
 		outside_circles = self.g_outside_circles
 		inside_rings = self.g_inside_rings[::-1]
 		inside_circles = [self.g_inside_circle]
 		connecting_circles = [circle for circles in self.g_connecting_circles for circle in circles]
 
-		return MapInfo(outside_lines, inside_lines, central_lines, connecting_lines, outside_circles, inside_rings, inside_circles, connecting_circles)
+		return MapInfo(outside_lines, inside_lines, central_lines, connecting_lines, sector_lines, outside_circles, inside_rings, inside_circles, connecting_circles)
