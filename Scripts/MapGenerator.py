@@ -332,14 +332,18 @@ class Generator:
 		lines = []
 		for points_list_index in range(len(outside_sector_points)):
 
-			outside_line = BasicElements.Line(*outside_sector_points[points_list_index])
-			inside_line = BasicElements.Line(*inside_sector_points[points_list_index])
-				
-			if not outside_line.is_lines_in_one_direction(inside_line):
-				inside_line.reverse_direction()
+			outside_points_list = outside_sector_points[points_list_index]
+			inside_points_list = inside_sector_points[points_list_index]
 
-			for index, point in enumerate(outside_line.get_boundaries()):
-				lines.append(MapElements.MapLine(point, inside_line.get_boundaries()[index], self.connecting_line))
+			if len(outside_points_list) > 1:
+				outside_line = BasicElements.Line(outside_points_list[0], outside_points_list[-1])
+				inside_line = BasicElements.Line(inside_points_list[0], inside_points_list[-1])
+				
+				if not outside_line.is_lines_in_one_direction(inside_line):
+					inside_points_list = inside_points_list[::-1]
+
+			for index, point in enumerate(outside_points_list):
+				lines.append(MapElements.MapLine(point, inside_points_list[index], self.connecting_line))
 
 		return lines
 
