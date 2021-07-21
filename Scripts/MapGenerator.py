@@ -100,6 +100,14 @@ class MapInfo:
 			for circle in circles:
 				yield circle
 
+	def get_boundaries(self):
+		'''Function to get boundary points of the map'''
+		points = []
+		for circle in self.outside_circles:
+			points.append(circle.center)
+
+		return points
+
 class Generator:
 	'''
 	Generator - class to generate specific map in 2d space
@@ -350,9 +358,9 @@ class Generator:
 		return MapElements.MapCircle(BasicElements.Point(0, 0), self.inside_circle)
 
 	def generate_inside_ring(self, generation: int = 1):
+		'''Function to generate ring inside map with generation parameters'''
 		circle = MapElements.MapCircle(BasicElements.Point(0, 0), self.inside_rings, True)
 		circle.scale(self.noise_scale_length(generation))
-		print(circle.radius)
 		return circle
 
 	def generate_connecting_circles(self, generation: int = 1):
