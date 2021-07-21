@@ -59,7 +59,7 @@ def test_2():
 	outside_line_length = 100
 	
 	inside_line_thickness = 5
-	inside_line_length = 20
+	inside_line_length = 30
 	inside_line_distance_from_previous = 14
 	
 	central_line_thickness = 5
@@ -76,10 +76,10 @@ def test_2():
 
 	sides_count = 3
 	rings_count = 1
-	sector_subdivisions = 3
+	sector_subdivisions = 4
 	generation_count = 1
 
-	blur_pixels = 4
+	blur_pixels = 0
 
 	outside_line = Abstracts.AbstractMapLineParameters(outside_line_thickness, outside_line_length)
 	inside_line = Abstracts.AbstractMapLineParameters(inside_line_thickness, inside_line_length, inside_line_distance_from_previous)
