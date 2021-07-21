@@ -7,7 +7,7 @@ class Point:
 	- 'x' coordinate in space
 	- 'y' coordinate in space
 	'''
-	ROUND = -1
+	ROUND = 3
 
 	#Initializer
 	def __init__(self, x: float = 0, y: float = 0):
@@ -121,6 +121,43 @@ class Point:
 		for i in [self.x, self.y]:
 			yield i
 
+class Direction:
+	'''
+	Direction - class to work with line direction. Containing comparator of direction, and possibility to switch the direction 
+	'''
+
+	#Possible directions in terms of X and Y
+	no = (0, 0)
+	up = (0, 1)
+	down = (0, -1)
+	left = (-1, 0)
+	right = (1, 0)
+
+	top_left = (-1, 1)
+	top_right = (1, 1)
+	bottom_left = (-1, -1)
+	bottom_right = (1, -1)
+
+	def __init__(self, line: 'Line'):
+		self.line = line
+		self.direction = self.get_direction()
+
+	def get_direction(self):
+		delta = self.line.point2 - self.line.point1
+
+		factor_x = 0
+		factor_y = 0
+
+		if delta.x != 0:
+			factor_x = int(delta.x/abs(delta.x))
+		if delta.x != 0:
+			factor_x = int(delta.x/abs(delta.x))
+
+		return (factor_x, factor_y)
+
+	def __eq__(self, direction: 'Direction'):
+		return self.get_direction() == direction.get_direction()
+
 class Line:
 	'''
 	Line - class to work with lines and line sectors in 2d space
@@ -160,6 +197,11 @@ class Line:
 		point2 = point.get_second_point_from_angle_distance(angle, distance)
 		return Line(point, point2)
 
+	#Setters
+	def reverse_direction(self):
+		'''Reverse line direction'''
+		self.point1, self.point2 = self.point2, self.point1
+
 	#Getters
 
 	def get_equation(self):
@@ -182,7 +224,18 @@ class Line:
 
 	def get_central_point(self):
 		'''Function to get point at center between boundaries of the line'''
-		return self.point1.get_scaled_point_to_factor(self.point2, self.distance/2)
+		return self.get_subdivision_points(2)[0]
+
+	def get_subdivision_points(self, subdivisions_count: int = 1):
+		'''Function to get subdivision points for line. Returns points of subdivision inside. Count of this points is one less then subdivisions count.'''
+		if subdivisions_count <= 1:
+			return []
+		else:
+			points = []
+			for i in range(1, subdivisions_count):
+				point = self.point1.get_scaled_point_to_factor(self.point2, i*self.distance/subdivisions_count)
+				points.append(point)
+			return points
 
 	def get_parallel_line(self, point: Point = Point(0, 0), distance: float = 1):
 		'''Function to generate parallel line sector to this at the specific central point with specific distance from center to boundaries'''
@@ -220,6 +273,9 @@ class Line:
 		ycond = (ymin <= point.y <= ymax)
 
 		return xcond and ycond and self.is_point_on_line(point)
+
+	def is_lines_in_one_direction(self, line: 'Line'):
+		return Direction(self) == Direction(line)
 
 	def get_xy_lists(self):
 		return [self.point1.x, self.point2.x], [self.point1.y, self.point2.y]
