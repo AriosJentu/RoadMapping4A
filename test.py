@@ -76,6 +76,7 @@ def test_2():
 
 	sides_count = 3
 	rings_count = 1
+	sector_subdivisions = 3
 	generation_count = 1
 
 	outside_line = Abstracts.AbstractMapLineParameters(outside_line_thickness, outside_line_length)
@@ -100,6 +101,7 @@ def test_2():
 		connecting_circle=connecting_circle,
 		sides_count=sides_count,
 		rings_count=rings_count,
+		sector_subdivisions=sector_subdivisions,
 		generation_count=generation_count
 	).generate()
 	visualizer = Visualizer.Visualizer(generated_map)
