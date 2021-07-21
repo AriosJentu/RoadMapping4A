@@ -1,4 +1,4 @@
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFilter
 
 from . import BasicElements
 from . import MapElements
@@ -6,10 +6,11 @@ from . import MapGenerator
 
 class Visualizer:
 
-	def __init__(self, map_info: MapGenerator.MapInfo, pixels_per_unit: float = 10, image_size: (int, int) = (2048, 2048)):
+	def __init__(self, map_info: MapGenerator.MapInfo, pixels_per_unit: float = 10, image_size: (int, int) = (2048, 2048), blur_pixels: int = 0):
 		self.map_info = map_info
 		self.pixels_per_unit = pixels_per_unit
 		self.image_size = image_size
+		self.blur_pixels = blur_pixels
 
 	def save_image(self, filename: str):
 		
@@ -46,6 +47,8 @@ class Visualizer:
 				fill=(0, 0, 0, 255), 
 				width=line.get_thickness()*self.pixels_per_unit
 			)
+
+		blank = blank.filter(ImageFilter.GaussianBlur(self.blur_pixels))
 
 		blank.save(filename, "PNG")
 		

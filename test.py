@@ -55,29 +55,31 @@ def test_1():
 
 def test_2():
 	
-	outside_line_thickness = 3 
+	outside_line_thickness = 6 
 	outside_line_length = 100
 	
-	inside_line_thickness = 2
-	inside_line_length = 40
-	inside_line_distance_from_previous = 10
+	inside_line_thickness = 5
+	inside_line_length = 20
+	inside_line_distance_from_previous = 14
 	
-	central_line_thickness = 2
+	central_line_thickness = 5
 	
-	connecting_line_thickness = 2
-	connecting_line_separation_distance = 20
+	connecting_line_thickness = 5
+	connecting_line_separation_distance = 15
 
-	outside_circle_radius = 5
-	inside_circle_radius = 6
-	connecting_circle_radius = 2
+	outside_circle_radius = 6
+	inside_circle_radius = 8
+	connecting_circle_radius = 3
 	
-	rings_radius = 15
-	rings_thickness = 2
+	rings_radius = 14
+	rings_thickness = 4
 
 	sides_count = 3
 	rings_count = 1
 	sector_subdivisions = 3
 	generation_count = 1
+
+	blur_pixels = 4
 
 	outside_line = Abstracts.AbstractMapLineParameters(outside_line_thickness, outside_line_length)
 	inside_line = Abstracts.AbstractMapLineParameters(inside_line_thickness, inside_line_length, inside_line_distance_from_previous)
@@ -104,7 +106,7 @@ def test_2():
 		sector_subdivisions=sector_subdivisions,
 		generation_count=generation_count
 	).generate()
-	visualizer = Visualizer.Visualizer(generated_map)
+	visualizer = Visualizer.Visualizer(generated_map, blur_pixels=blur_pixels)
 	visualizer.save_image("Hello world.png")
 
 test_2()
